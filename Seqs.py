@@ -174,11 +174,30 @@ class Polypeptide(object):
             more details in paper at DOI 10.1186/s13062-016-0159-9 """
         ph = 0.000
         while 1/(1 + 10**(ph - 9.094)) - 1/(1 + 10**(2.869 - ph)) - self.sequence.count('C')/(1 + 10**(7.555 - ph)) - \
-            self.sequence.count('D')/(1 + 10**(3.872 - ph)) - self.sequence.count('E')/(1 + 10**(4.412 - ph)) - \
-            self.sequence.count('Y')/(1 + 10**(10.85 - ph)) + self.sequence.count('H')/(1 + 10**(ph - 5.637)) + \
-            self.sequence.count('K')/(1 + 10**(ph - 9.052)) + self.sequence.count('R')/(1 + 10**(ph - 12.503)) > 0:
+              self.sequence.count('D')/(1 + 10**(3.872 - ph)) - self.sequence.count('E')/(1 + 10**(4.412 - ph)) - \
+              self.sequence.count('Y')/(1 + 10**(10.85 - ph)) + self.sequence.count('H')/(1 + 10**(ph - 5.637)) + \
+              self.sequence.count('K')/(1 + 10**(ph - 9.052)) + self.sequence.count('R')/(1 + 10**(ph - 12.503)) > 0:
                 ph += 0.001
         return ph
+
+
+def dna_fasta(filename):
+    with open(filename) as fasta_dna:
+        sequence = fasta_dna.read()
+        return DNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0][1:])
+
+
+def rna_fasta(filename):
+    with open(filename) as fasta_rna:
+        sequence = fasta_rna.read()
+        return RNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0][1:])
+
+
+def protein_fasta(filename):
+    with open(filename) as fasta_protein:
+        sequence = fasta_protein.read()
+        return Polypeptide(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]
+        [1:])
 
 
 dna_test = DNA('atgc', identifier='fastaq1')
@@ -205,9 +224,4 @@ print(rna_test.gc_content())
 print(rna_test.mw())
 print(rna_test.rev_transcript())
 print(rna_test.translation())
-prot_test = Polypeptide('KLVLITKFMMMC')
-prot_test.sequence = 'MLQLGLRVLGCKASSVLRASTCLAGRAGRKEAGWECGGARSFSSSAVTMAPIKVGDAIPSVEVFEGEPGKKVNLAELFKGKKGVLFGVPGAFTPG'
-print(prot_test.sequence)
-print(prot_test.mw())
-print(prot_test.exst_coef())
-print(prot_test.isoelectric_point())
+
