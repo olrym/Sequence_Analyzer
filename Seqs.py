@@ -1,4 +1,5 @@
 class DNA(object):
+    __slots__ = ['_sequence', 'identifier', 'features']
 
     def __init__(self, sequence, identifier='DNA', features=None):
         if not set(sequence).issubset('ATGCatgc'):
@@ -76,6 +77,7 @@ class DNA(object):
 
 
 class RNA(object):
+    __slots__ = ['_sequence', 'identifier', 'features']
 
     def __init__(self, sequence, identifier='RNA', features=None):
         if not set(sequence).issubset('AUGCaugc'):
@@ -136,6 +138,7 @@ class RNA(object):
 
 
 class Polypeptide(object):
+    __slots__ = ['_sequence', 'identifier', 'features']
 
     def __init__(self, sequence, identifier='Polypeptide', features=None):
         if not set(sequence).issubset('ACDEFGHIKLMNPQRSTVWY'):
@@ -197,7 +200,7 @@ def protein_fasta(filename):
     with open(filename) as fasta_protein:
         sequence = fasta_protein.read()
         return Polypeptide(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]
-        [1:])
+               [1:])
 
 
 dna_test = DNA('atgc', identifier='fastaq1')
@@ -224,4 +227,3 @@ print(rna_test.gc_content())
 print(rna_test.mw())
 print(rna_test.rev_transcript())
 print(rna_test.translation())
-
