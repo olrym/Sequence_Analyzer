@@ -1,11 +1,11 @@
 class DNA(object):
-    __slots__ = ['_sequence', 'identifier', 'features']
+    __slots__ = ['_sequence', '_identifier', 'features']
 
     def __init__(self, sequence, identifier='DNA', features=None):
-        if not set(sequence).issubset('ATGCatgc'):
+        if not set(sequence).issubset('ATGCNWSMKRYBDHVZatgcnwsmkrybdhvz'):
             raise ValueError('Given sequence is not DNA')
         self._sequence = sequence
-        self.identifier = identifier
+        self._identifier = identifier
         self.features = features
 
     @property
@@ -14,9 +14,17 @@ class DNA(object):
 
     @sequence.setter
     def sequence(self, value):
-        if not set(value).issubset('ATGCatgc'):
+        if not set(value).issubset('ATGCNWSMKRYBDHVZatgcnwsmkrybdhvz'):
             raise ValueError('Given sequence is not DNA')
         self._sequence = value
+
+    @property
+    def identifier(self):
+        return self._identifier
+
+    @identifier.setter
+    def identifier(self, value):
+        self._identifier = value
 
     def length(self):
         return len(self.sequence)
@@ -77,13 +85,13 @@ class DNA(object):
 
 
 class RNA(object):
-    __slots__ = ['_sequence', 'identifier', 'features']
+    __slots__ = ['_sequence', '_identifier', 'features']
 
     def __init__(self, sequence, identifier='RNA', features=None):
         if not set(sequence).issubset('AUGCaugc'):
             raise ValueError('Given sequence is not RNA')
         self._sequence = sequence
-        self.identifier = identifier
+        self._identifier = identifier
         self.features = features
 
     @property
@@ -95,6 +103,14 @@ class RNA(object):
         if not set(value).issubset('AUGCaugc'):
             raise ValueError('Given sequence is not RNA')
         self._sequence = value
+
+    @property
+    def identifier(self):
+        return self._identifier
+
+    @identifier.setter
+    def identifier(self, value):
+        self._identifier = value
 
     def length(self):
         return len(self.sequence)
@@ -138,13 +154,13 @@ class RNA(object):
 
 
 class Polypeptide(object):
-    __slots__ = ['_sequence', 'identifier', 'features']
+    __slots__ = ['_sequence', '_identifier', 'features']
 
     def __init__(self, sequence, identifier='Polypeptide', features=None):
         if not set(sequence).issubset('ACDEFGHIKLMNPQRSTVWY'):
             raise ValueError('Given sequence is not polypeptide')
         self._sequence = sequence
-        self.identifier = identifier
+        self._identifier = identifier
         self.features = features
 
     @property
@@ -156,6 +172,14 @@ class Polypeptide(object):
         if not set(value).issubset('ACDEFGHIKLMNPQRSTVWY'):
             raise ValueError('Given sequence is not polypeptide')
         self._sequence = value
+
+    @property
+    def identifier(self):
+        return self._identifier
+
+    @identifier.setter
+    def identifier(self, value):
+        self._identifier = value
 
     def length(self):
         return len(self.sequence)
@@ -184,46 +208,109 @@ class Polypeptide(object):
         return ph
 
 
-def dna_fasta(filename):
+def read_dna_fasta(filename):
     with open(filename) as fasta_dna:
-        sequence = fasta_dna.read()
-        return DNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0][1:])
+        content = fasta_dna.read()
+        return DNA(sequence=content.split('\n', 1)[1].replace('\n', ''), identifier=content.split('\n', 1)[0][1:])
 
 
-def rna_fasta(filename):
+def read_rna_fasta(filename):
     with open(filename) as fasta_rna:
-        sequence = fasta_rna.read()
-        return RNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0][1:])
+        content = fasta_rna.read()
+        return RNA(sequence=content.split('\n', 1)[1].replace('\n', ''), identifier=content.split('\n', 1)[0][1:])
 
 
-def protein_fasta(filename):
+def read_protein_fasta(filename):
     with open(filename) as fasta_protein:
-        sequence = fasta_protein.read()
-        return Polypeptide(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]
+        content = fasta_protein.read()
+        return Polypeptide(sequence=content.split('\n', 1)[1].replace('\n', ''), identifier=content.split('\n', 1)[0]
                [1:])
 
 
-dna_test = DNA('atgc', identifier='fastaq1')
-dna_test.identifier = 'myDNA'
-print(dna_test.identifier)
-dna_test.sequence = 'ATgGgacGcAttCTaGC'
-print(dna_test.sequence)
-print(dna_test.length())
-print(dna_test.gc_content())
-print(dna_test.mw_ss())
-print(dna_test.mw_ds())
-print(dna_test.compl_strand())
-print(dna_test.rev_compl_strand())
-print(dna_test.transcript())
-print(dna_test.sequence.upper())
-print(dna_test.translation())
-rna_test = RNA('augc')
-rna_test.identifier = 'myRNA'
-print(rna_test.identifier)
-rna_test.sequence = 'AUgGgacGcAuuCUaGC'
-print(rna_test.sequence)
-print(rna_test.length())
-print(rna_test.gc_content())
-print(rna_test.mw())
-print(rna_test.rev_transcript())
-print(rna_test.translation())
+def read_dna_multi_fasta(filename):
+    DNAs = list()
+    with open(filename) as multi_fasta_dna:
+        content = multi_fasta_dna.read()
+        sequences = content.split('>')[1:]
+        for sequence in sequences:
+            DNAs.append(DNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]))
+    return DNAs
+
+
+def read_rna_multi_fasta(filename):
+    RNAs = list()
+    with open(filename) as multi_fasta_rna:
+        content = multi_fasta_rna.read()
+        sequences = content.split('>')[1:]
+        for sequence in sequences:
+            RNAs.append(RNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]))
+    return RNAs
+
+
+def read_protein_multi_fasta(filename):
+    Proteins = list()
+    with open(filename) as multi_fasta_protein:
+        content = multi_fasta_protein.read()
+        sequences = content.split('>')[1:]
+        for sequence in sequences:
+            Proteins.append(Polypeptide(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]))
+    return Proteins
+
+
+def read_fastq(filename, cutoff):
+    a = 0
+    quality_scale = '''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'''
+    Seqs = list()
+    with open(filename) as fastq_file:
+        line_count = 1
+        Sequence = DNA('N')
+        for line in fastq_file:
+            a += 1
+            print(a)
+            if line_count == 1:
+                Sequence.identifier = line.split('@')[1].rstrip()
+                line_count = 2
+            elif line_count == 2:
+                Sequence.sequence = line.rstrip()
+                line_count = 3
+            elif line_count == 3:
+                line_count = 4
+            else:
+                for character in line:
+                    if character == cutoff:
+                        Sequence.sequence = 'N'
+                    elif character in quality_scale.split(cutoff)[0]:
+                        Sequence.sequence = 'N'
+                    else:
+                        continue
+                if Sequence.sequence != 'N':
+                    Seqs.append(Sequence)
+                line_count = 1
+    return(Seqs)
+
+
+# dna_test = DNA('atgc', identifier='fastaq1')
+# dna_test.identifier = 'myDNA'
+# print(dna_test.identifier)
+# dna_test.sequence = 'ATgGgacGcAttCTaGC'
+# print(dna_test.sequence)
+# print(dna_test.length())
+# print(dna_test.gc_content())
+# print(dna_test.mw_ss())
+# print(dna_test.mw_ds())
+# print(dna_test.compl_strand())
+# print(dna_test.rev_compl_strand())
+# print(dna_test.transcript())
+# print(dna_test.sequence.upper())
+# print(dna_test.translation())
+# rna_test = RNA('augc')
+# rna_test.identifier = 'myRNA'
+# print(rna_test.identifier)
+# rna_test.sequence = 'AUgGgacGcAuuCUaGC'
+# print(rna_test.sequence)
+# print(rna_test.length())
+# print(rna_test.gc_content())
+# print(rna_test.mw())
+# print(rna_test.rev_transcript())
+# print(rna_test.translation())
+
