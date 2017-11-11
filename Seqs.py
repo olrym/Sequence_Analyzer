@@ -345,14 +345,12 @@ def write_dna_fasta(filename, Protein):
 def read_fastq(filename, cutoff):
     """Read the FASTQ file with the given filename and return a list of DNA objects with the corresponding
     sequences and identifiers for each read that has all the quality values higher than or equal to the cutoff value."""
-    a = 0
     quality_scale = '''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'''
     Seqs = list()
     with open(filename) as fastq_file:
         line_count = 1
         Sequence = DNA('N')
         for line in fastq_file:
-            a += 1
             if line_count == 1:
                 Sequence.identifier = line.split('@')[1].rstrip()
                 line_count = 2
@@ -367,11 +365,10 @@ def read_fastq(filename, cutoff):
                         Sequence.sequence = 'N'
                     elif character in quality_scale.split(cutoff)[0]:
                         Sequence.sequence = 'N'
-                    else:
-                        continue
                 if Sequence.sequence != 'N':
                     Seqs.append(Sequence)
                 line_count = 1
+                Sequence = DNA('N')
     return Seqs
 
 
