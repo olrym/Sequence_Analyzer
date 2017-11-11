@@ -1,4 +1,6 @@
 class DNA(object):
+    """A class for DNA sequences. Attributes are the DNA sequence itself, an identifier for the sequence, and the
+    sequence features."""
     __slots__ = ['_sequence', '_identifier', 'features']
 
     def __init__(self, sequence, identifier='DNA', features=None):
@@ -10,59 +12,91 @@ class DNA(object):
 
     @property
     def sequence(self):
+        """Property for keeping self._sequence private."""
         return self._sequence
 
     @sequence.setter
     def sequence(self, value):
+        """Set self._sequence to the value string if the string contains only the nucleotide abbreviations (normal or
+        degenerate)."""
         if not set(value).issubset('ATGCNWSMKRYBDHVZatgcnwsmkrybdhvz'):
             raise ValueError('Given sequence is not DNA')
         self._sequence = value
 
     @property
     def identifier(self):
+        """Property for keeping self._identifier private."""
         return self._identifier
 
     @identifier.setter
     def identifier(self, value):
+        """Set self._identifier to the value string."""
         self._identifier = value
 
     def length(self):
+        """Calculate the length of self._sequence."""
         return len(self.sequence)
 
     def gc_content(self):
-        return (self.sequence.count('G') + self.sequence.count('C')) / len(self.sequence) * 100
+        """Calculate the GC-content of the DNA sequence,  if sequence is not degenerate."""
+        if set(self.sequence).issubset('ATGCatgc'):
+            return (self.sequence.upper().count('G') + self.sequence.upper().count('C')) / len(self.sequence) * 100
+        else:
+            raise ValueError('The given sequence is degenerate')
 
     def mw_ss(self):
-        return self.sequence.count('a') * 491.2 + self.sequence.count('A') * 491.2 + self.sequence.count(
-            'c') * 467.2 + self.sequence.count('C') * 467.2 + self.sequence.count('g') * 507.2 + self.sequence.count(
-            'G') * 507.2 + self.sequence.count('t') * 482.2 + self.sequence.count('T') * 482.2
+        """Calculate the molecular weight of the single-stranded DNA molecule, if sequence is not degenerate.."""
+        if set(self.sequence).issubset('ATGCatgc'):
+            return self.sequence.count('a') * 491.2 + self.sequence.count('A') * 491.2 + self.sequence.count(
+                'c') * 467.2 + self.sequence.count('C') * 467.2 + self.sequence.count('g') * 507.2 + self.sequence.count(
+                'G') * 507.2 + self.sequence.count('t') * 482.2 + self.sequence.count('T') * 482.2
+        else:
+            raise ValueError('The given sequence is degenerate')
 
     def mw_ds(self):
-        return self.mw_ss() * 2
+        """Calculate the molecular weight of the double-stranded DNA molecule, if sequence is not degenerate."""
+        if set(self.sequence).issubset('ATGCatgc'):
+            return self.mw_ss() * 2
+        else:
+            raise ValueError('The given sequence is degenerate')
+
 
     def compl_strand(self):
+        """Return the sequence string complementary to self._sequence, if sequence is not degenerate."""
         compl_rules = {'a': 't', 'g': 'c', 't': 'a', 'c': 'g', 'A': 'T', 'G': 'C', 'T': 'A', 'C': 'G'}
         compl_strand = str()
         for nucleotide in self.sequence:
             compl_strand += compl_rules[nucleotide]
-        return compl_strand
+        if set(self.sequence).issubset('ATGCatgc'):
+            return compl_strand
+        else:
+            raise ValueError('The given sequence is degenerate')
 
     def rev_compl_strand(self):
+        """Return the sequence string reverse complementary to self._sequence, if sequence is not degenerate."""
         compl_rules = {'a': 't', 'g': 'c', 't': 'a', 'c': 'g', 'A': 'T', 'G': 'C', 'T': 'A', 'C': 'G'}
         rev_compl_strand = str()
         for nucleotide in self.sequence[::-1]:
             rev_compl_strand += compl_rules[nucleotide]
-        return rev_compl_strand
+        if set(self.sequence).issubset('ATGCatgc'):
+            return rev_compl_strand
+        else:
+            raise ValueError('The given sequence is degenerate')
 
     def transcript(self):
+        """Return the RNA sequence string corresponding to self._sequence, if sequence is not degenerate."""
         transcr_rules = {'a': 'a', 'g': 'g', 't': 'u', 'c': 'c', 'A': 'A', 'G': 'G', 'T': 'U', 'C': 'C', 'u': 't', 'U':
                          'T'}
         transcr_strand = str()
         for nucleotide in self.sequence:
             transcr_strand += transcr_rules[nucleotide]
-        return transcr_strand
+        if set(self.sequence).issubset('ATGCatgc'):
+            return transcr_strand
+        else:
+            raise ValueError('The given sequence is degenerate')
 
     def translation(self):
+        """Return the protein sequence string encoded by self._sequence, if sequence is not degenerate."""
         translation_rules = {'TTT': 'F', 'TTC': 'F', 'TTA': 'L', 'TTG': 'L', 'TCT': 'S', 'TCC': 's', 'TCA': 'S',
                              'TCG': 'S', 'TAT': 'Y', 'TAC': 'Y', 'TAA': 'x', 'TAG': 'x', 'TGT': 'C', 'TGC': 'C',
                              'TGA': 'x', 'TGG': 'W', 'CTT': 'L', 'CTC': 'L', 'CTA': 'L', 'CTG': 'L', 'CCT': 'P',
@@ -81,10 +115,15 @@ class DNA(object):
             sequence = sequence[3:]
         for codon in codons:
             polypeptide += translation_rules[codon]
-        return polypeptide
+        if set(self.sequence).issubset('ATGCatgc'):
+            return polypeptide
+        else:
+            raise ValueError('The given sequence is degenerate')
 
 
 class RNA(object):
+    """A class for RNA sequences. Attributes are the DNA sequence itself, an identifier for the sequence, and the
+    sequence features"""
     __slots__ = ['_sequence', '_identifier', 'features']
 
     def __init__(self, sequence, identifier='RNA', features=None):
@@ -96,34 +135,42 @@ class RNA(object):
 
     @property
     def sequence(self):
+        """Property for keeping self._sequence private."""
         return self._sequence
 
     @sequence.setter
     def sequence(self, value):
+        """Set self._sequence to the value string if the string contains only the nucleotide abbreviations."""
         if not set(value).issubset('AUGCaugc'):
             raise ValueError('Given sequence is not RNA')
         self._sequence = value
 
     @property
     def identifier(self):
+        """Property for keeping  self._identifier private."""
         return self._identifier
 
     @identifier.setter
     def identifier(self, value):
+        """Set self._identifier to the value string."""
         self._identifier = value
 
     def length(self):
+        """Calculate the length of self._sequence."""
         return len(self.sequence)
 
     def gc_content(self):
+        """Calculate the GC-content of the RNA sequence."""
         return (self.sequence.count('G') + self.sequence.count('C')) / len(self.sequence) * 100
 
     def mw(self):
+        """Calculate the molecular weight of the RNA molecule."""
         return self.sequence.count('a') * 507.2 + self.sequence.count('A') * 507.2 + self.sequence.count(
             'c') * 483.2 + self.sequence.count('C') * 483.2 + self.sequence.count('g') * 523.2 + self.sequence.count(
             'G') * 523.2 + self.sequence.count('u') * 484.2 + self.sequence.count('U') * 484.2
 
     def rev_transcript(self):
+        """Return the DNA sequence string corresponding to self._sequence."""
         transcr_rules = {'a': 'a', 'g': 'g', 't': 'u', 'c': 'c', 'A': 'A', 'G': 'G', 'T': 'U', 'C': 'C', 'u': 't', 'U':
                          'T'}
         rev_transcr_strand = str()
@@ -132,6 +179,7 @@ class RNA(object):
         return rev_transcr_strand
 
     def translation(self):
+        """Return the protein sequence string encoded by self._sequence."""
         translation_rules = {'UUU': 'F', 'UUC': 'F', 'UUA': 'L', 'UUG': 'L', 'UCU': 'S', 'UCC': 's', 'UCA': 'S',
                              'UCG': 'S', 'UAU': 'Y', 'UAC': 'Y', 'UAA': 'x', 'UAG': 'x', 'UGU': 'C', 'UGC': 'C',
                              'UGA': 'x', 'UGG': 'W', 'CUU': 'L', 'CUC': 'L', 'CUA': 'L', 'CUG': 'L', 'CCU': 'P',
@@ -154,6 +202,8 @@ class RNA(object):
 
 
 class Polypeptide(object):
+    """A class for protein sequences. Attributes are the DNA sequence itself, an identifier for the sequence, and the
+    sequence features"""
     __slots__ = ['_sequence', '_identifier', 'features']
 
     def __init__(self, sequence, identifier='Polypeptide', features=None):
@@ -165,26 +215,33 @@ class Polypeptide(object):
 
     @property
     def sequence(self):
+        """Property for keeping self._sequence private."""
         return self._sequence
 
     @sequence.setter
     def sequence(self, value):
+        """Set self._sequence to the value string if the string contains only the amino acid residues abbreviations."""
         if not set(value).issubset('ACDEFGHIKLMNPQRSTVWY'):
             raise ValueError('Given sequence is not polypeptide')
         self._sequence = value
 
     @property
     def identifier(self):
+        """Property for keeping self._identifier private."""
         return self._identifier
 
     @identifier.setter
     def identifier(self, value):
+        """Set self._identifier to the value string."""
+
         self._identifier = value
 
     def length(self):
+        """Calculate the length of self._sequence."""
         return len(self.sequence)
 
     def mw(self):
+        """Calculate the molecular weight of the protein molecule."""
         return self.sequence.count('A') * 71 + self.sequence.count('C') * 103 + self.sequence.count('D') * 115 + \
                self.sequence.count('E') * 129 + self.sequence.count('F') * 147 + self.sequence.count('G') * 57 + \
                self.sequence.count('H') * 137 + self.sequence.count('I') * 113 + self.sequence.count('K') * 128 + \
@@ -194,11 +251,13 @@ class Polypeptide(object):
                self.sequence.count('W') * 186 + self.sequence.count('Y') * 163
 
     def exst_coef(self):
+        """Calculate the exctinction coefficient of the protein molecule at 280 nm wavelength."""
         return self.sequence.count('Y') * 1490 + self.sequence.count('W') * 5500
 
     def isoelectric_point(self):
-        """ Algorithm after http://isoelectric.ovh.org/index.html
-            more details in paper at DOI 10.1186/s13062-016-0159-9 """
+        """Calculate the isoelectric point of the protein molecule.
+           Algorithm from http://isoelectric.ovh.org/index.html.
+           More details in the paper at DOI 10.1186/s13062-016-0159-9."""
         ph = 0.000
         while 1/(1 + 10**(ph - 9.094)) - 1/(1 + 10**(2.869 - ph)) - self.sequence.count('C')/(1 + 10**(7.555 - ph)) - \
               self.sequence.count('D')/(1 + 10**(3.872 - ph)) - self.sequence.count('E')/(1 + 10**(4.412 - ph)) - \
@@ -209,18 +268,24 @@ class Polypeptide(object):
 
 
 def read_dna_fasta(filename):
+    """Read the FASTA file with the given filename and return a DNA object with the corresponding sequence and
+    identifier."""
     with open(filename) as fasta_dna:
         content = fasta_dna.read()
         return DNA(sequence=content.split('\n', 1)[1].replace('\n', ''), identifier=content.split('\n', 1)[0][1:])
 
 
 def read_rna_fasta(filename):
+    """Read the FASTA file with the given filename and return a RNA object with the corresponding sequence and
+    identifier."""
     with open(filename) as fasta_rna:
         content = fasta_rna.read()
         return RNA(sequence=content.split('\n', 1)[1].replace('\n', ''), identifier=content.split('\n', 1)[0][1:])
 
 
 def read_protein_fasta(filename):
+    """Read the FASTA file with the given filename and return a Polypeptide object with the corresponding sequence and
+    identifier."""
     with open(filename) as fasta_protein:
         content = fasta_protein.read()
         return Polypeptide(sequence=content.split('\n', 1)[1].replace('\n', ''), identifier=content.split('\n', 1)[0]
@@ -228,16 +293,20 @@ def read_protein_fasta(filename):
 
 
 def read_dna_multi_fasta(filename):
-    DNAs = list()
+    """Read the Multi-FASTA file with the given filename and return a list of DNA objects with the corresponding
+    sequences and identifiers."""
+    dnas = list()
     with open(filename) as multi_fasta_dna:
         content = multi_fasta_dna.read()
         sequences = content.split('>')[1:]
         for sequence in sequences:
-            DNAs.append(DNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]))
-    return DNAs
+            dnas.append(DNA(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]))
+    return dnas
 
 
 def read_rna_multi_fasta(filename):
+    """Read the Multi-FASTA file with the given filename and return a list of RNA objects with the corresponding
+    sequences and identifiers."""
     RNAs = list()
     with open(filename) as multi_fasta_rna:
         content = multi_fasta_rna.read()
@@ -248,6 +317,8 @@ def read_rna_multi_fasta(filename):
 
 
 def read_protein_multi_fasta(filename):
+    """Read the Multi-FASTA file with the given filename and return a list of Polypeptide objects with the
+    corresponding sequences and identifiers."""
     Proteins = list()
     with open(filename) as multi_fasta_protein:
         content = multi_fasta_protein.read()
@@ -258,6 +329,8 @@ def read_protein_multi_fasta(filename):
 
 
 def read_fastq(filename, cutoff):
+    """Read the FASTQ file with the given filename and return a list of DNA objects with the corresponding
+    sequences and identifiers for each read that has all the quality values higher than or equal to the cutoff value."""
     a = 0
     quality_scale = '''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'''
     Seqs = list()
@@ -286,10 +359,10 @@ def read_fastq(filename, cutoff):
                 if Sequence.sequence != 'N':
                     Seqs.append(Sequence)
                 line_count = 1
-    return(Seqs)
+    return Seqs
 
 
-# dna_test = DNA('atgc', identifier='fastaq1')
+# dna_test = DNA('atgcn', identifier='fastaq1')
 # dna_test.identifier = 'myDNA'
 # print(dna_test.identifier)
 # dna_test.sequence = 'ATgGgacGcAttCTaGC'
