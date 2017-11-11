@@ -327,6 +327,20 @@ def read_protein_multi_fasta(filename):
             Proteins.append(Polypeptide(sequence=sequence.split('\n', 1)[1].replace('\n', ''), identifier=sequence.split('\n', 1)[0]))
     return Proteins
 
+def write_dna_fasta(filename, DNA):
+    """Write DNA object to a FASTA file"""
+    with open(filename, 'w') as fasta_dna:
+        fasta_dna.write('>' + DNA.identifier + '\n' + DNA.sequence)
+
+def write_rna_fasta(filename, RNA):
+    """Write RNA object to a FASTA file"""
+    with open(filename, 'w') as fasta_rna:
+        fasta_rna.write('>' + RNA.identifier + '\n' + RNA.sequence)
+
+def write_dna_fasta(filename, Protein):
+    """Write Polypeptide object to a FASTA file"""
+    with open(filename, 'w') as fasta_protein:
+        fasta_protein.write('>' + Protein.identifier + '\n' + Protein.sequence)
 
 def read_fastq(filename, cutoff):
     """Read the FASTQ file with the given filename and return a list of DNA objects with the corresponding
@@ -362,7 +376,6 @@ def read_fastq(filename, cutoff):
     return Seqs
 
 
-# dna_test = DNA('atgcn', identifier='fastaq1')
 # dna_test.identifier = 'myDNA'
 # print(dna_test.identifier)
 # dna_test.sequence = 'ATgGgacGcAttCTaGC'
@@ -386,4 +399,5 @@ def read_fastq(filename, cutoff):
 # print(rna_test.mw())
 # print(rna_test.rev_transcript())
 # print(rna_test.translation())
+
 
