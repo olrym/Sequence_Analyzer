@@ -353,7 +353,6 @@ def read_fastq(filename, cutoff):
         Sequence = DNA('N')
         for line in fastq_file:
             a += 1
-            print(a)
             if line_count == 1:
                 Sequence.identifier = line.split('@')[1].rstrip()
                 line_count = 2
