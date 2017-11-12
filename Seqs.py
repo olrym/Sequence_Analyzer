@@ -342,10 +342,11 @@ def write_dna_fasta(filename, Protein):
     with open(filename, 'w') as fasta_protein:
         fasta_protein.write('>' + Protein.identifier + '\n' + Protein.sequence)
 
-def read_fastq(filename, cutoff):
+def read_fastq(filename, cutoff = ' '):
     """Read the FASTQ file with the given filename and return a list of DNA objects with the corresponding
-    sequences and identifiers for each read that has all the quality values higher than or equal to the cutoff value."""
-    quality_scale = '''!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'''
+    sequences and identifiers for each read that has all the quality values higher than or equal to the cutoff value.
+    With the efault cutoff value  all the sequences will be added to the list."""
+    quality_scale = ''' !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'''
     Seqs = list()
     with open(filename) as fastq_file:
         line_count = 1
@@ -371,6 +372,31 @@ def read_fastq(filename, cutoff):
                 Sequence = DNA('N')
     return Seqs
 
+def fastq_to_fasta(filename, cutoff = ' '):
+    """Read the FASTQ file and write all the sequences with all the quality values higher than the cutoff value to a multi-FASTA file"""
+    quality_scale = ''' !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~'''
+    with open(filename) as fastq_file, open(filename.split('.')[0] + '.fasta', 'w') as fasta_file:
+        line_count = 1
+        fasta_entry = str()
+        for line in fastq_file:
+            if line_count == 1:
+                fasta_entry += '>' + line.split('@')[1]
+                line_count = 2
+            elif line_count == 2:
+                fasta_entry +=line
+                line_count = 3
+            elif line_count == 3:
+                line_count = 4
+            else:
+                for character in line:
+                    if character == cutoff:
+                        fasta_entry = str()
+                    elif character in quality_scale.split(cutoff)[0]:
+                        fasta_entry = str()
+                fasta_file.write(fasta_entry)
+                fasta_entry = str()
+                line_count = 1
+    return fasta_file
 
 # dna_test.identifier = 'myDNA'
 # print(dna_test.identifier)
@@ -395,5 +421,3 @@ def read_fastq(filename, cutoff):
 # print(rna_test.mw())
 # print(rna_test.rev_transcript())
 # print(rna_test.translation())
-
-
