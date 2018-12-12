@@ -1,4 +1,4 @@
-import urllib2
+import urllib.request
 
 class DNA(object):
     """A class for DNA sequences. Attributes are the DNA sequence itself, an identifier for the sequence, and the
@@ -295,9 +295,9 @@ def read_protein_fasta(filename):
 
 
 def uniprot_fasta(accession_code):
-    fasta = urllib2.urlopen('https://www.uniprot.org/uniprot/'+accession_code+'.fasta').read()
-    protein = Polypeptide(sequence=fasta.split('\n', 1)[1].replace('\n', ''), identifier=fasta.split('\n', 1)[0]
-               [1:])
+    fasta = urllib.request.urlopen('https://www.uniprot.org/uniprot/'+accession_code+'.fasta').read().decode('utf-8')
+    print(fasta)
+    protein = Polypeptide(sequence=fasta.split('\n', 1)[1].replace('\n', ''), identifier=fasta.split('\n', 1)[0][1:])
     return protein
 
 
