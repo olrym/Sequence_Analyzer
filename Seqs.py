@@ -1,3 +1,5 @@
+import urllib2
+
 class DNA(object):
     """A class for DNA sequences. Attributes are the DNA sequence itself, an identifier for the sequence, and the
     sequence features."""
@@ -292,6 +294,13 @@ def read_protein_fasta(filename):
                [1:])
 
 
+def uniprot_fasta(accession_code):
+    fasta = urllib2.urlopen('https://www.uniprot.org/uniprot/'+accession_code+'.fasta').read()
+    protein = Polypeptide(sequence=fasta.split('\n', 1)[1].replace('\n', ''), identifier=fasta.split('\n', 1)[0]
+               [1:])
+    return protein
+
+
 def read_dna_multi_fasta(filename):
     """Read the Multi-FASTA file with the given filename and return a list of DNA objects with the corresponding
     sequences and identifiers."""
@@ -421,3 +430,4 @@ def fastq_to_fasta(filename, cutoff = ' '):
 # print(rna_test.mw())
 # print(rna_test.rev_transcript())
 # print(rna_test.translation())
+# print(uniprot_fasta('O14980').sequence[0:20])
