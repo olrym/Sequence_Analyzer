@@ -1,5 +1,6 @@
 import urllib.request
 
+
 class DNA(object):
     """A class for DNA sequences. Attributes are the DNA sequence itself, an identifier for the sequence, and the
     sequence features."""
@@ -49,9 +50,10 @@ class DNA(object):
     def mw_ss(self):
         """Calculate the molecular weight of the single-stranded DNA molecule, if sequence is not degenerate.."""
         if set(self.sequence).issubset('ATGCatgc'):
-            return self.sequence.count('a') * 491.2 + self.sequence.count('A') * 491.2 + self.sequence.count(
-                'c') * 467.2 + self.sequence.count('C') * 467.2 + self.sequence.count('g') * 507.2 + self.sequence.count(
-                'G') * 507.2 + self.sequence.count('t') * 482.2 + self.sequence.count('T') * 482.2
+            return round(self.sequence.count('a') * 331.2 + self.sequence.count('A') * 331.2 + self.sequence.count(
+                'c') * 307.2 + self.sequence.count('C') * 307.2 + self.sequence.count('g') * 347.2 + \
+                   self.sequence.count('G') * 347.2 + self.sequence.count('t') * 322.2 + \
+                   self.sequence.count('T') * 322.2, 1)
         else:
             raise ValueError('The given sequence is degenerate')
 
@@ -85,7 +87,7 @@ class DNA(object):
         else:
             raise ValueError('The given sequence is degenerate')
 
-    def transcript(self):
+    def transcription(self):
         """Return the RNA sequence string corresponding to self._sequence, if sequence is not degenerate."""
         transcr_rules = {'a': 'a', 'g': 'g', 't': 'u', 'c': 'c', 'A': 'A', 'G': 'G', 'T': 'U', 'C': 'C', 'u': 't', 'U':
                          'T'}
@@ -163,15 +165,15 @@ class RNA(object):
 
     def gc_content(self):
         """Calculate the GC-content of the RNA sequence."""
-        return (self.sequence.count('G') + self.sequence.count('C')) / len(self.sequence) * 100
+        return (self.sequence.upper().count('G') + self.sequence.upper().count('C')) / len(self.sequence) * 100
 
     def mw(self):
         """Calculate the molecular weight of the RNA molecule."""
-        return self.sequence.count('a') * 507.2 + self.sequence.count('A') * 507.2 + self.sequence.count(
-            'c') * 483.2 + self.sequence.count('C') * 483.2 + self.sequence.count('g') * 523.2 + self.sequence.count(
-            'G') * 523.2 + self.sequence.count('u') * 484.2 + self.sequence.count('U') * 484.2
+        return round(self.sequence.count('a') * 347.2 + self.sequence.count('A') * 347.2 + self.sequence.count(
+            'c') * 323.2 + self.sequence.count('C') * 323.2 + self.sequence.count('g') * 363.2 + self.sequence.count(
+            'G') * 363.2 + self.sequence.count('u') * 324.2 + self.sequence.count('U') * 324.2, 1)
 
-    def rev_transcript(self):
+    def rev_transcription(self):
         """Return the DNA sequence string corresponding to self._sequence."""
         transcr_rules = {'a': 'a', 'g': 'g', 't': 'u', 'c': 'c', 'A': 'A', 'G': 'G', 'T': 'U', 'C': 'C', 'u': 't', 'U':
                          'T'}
@@ -252,7 +254,7 @@ class Polypeptide(object):
                self.sequence.count('S') * 87 + self.sequence.count('T') * 101 + self.sequence.count('V') * 99 + \
                self.sequence.count('W') * 186 + self.sequence.count('Y') * 163
 
-    def exst_coef(self):
+    def ext_coef(self):
         """Calculate the exctinction coefficient of the protein molecule at 280 nm wavelength."""
         return self.sequence.count('Y') * 1490 + self.sequence.count('W') * 5500
 
@@ -266,7 +268,7 @@ class Polypeptide(object):
               self.sequence.count('Y')/(1 + 10**(10.85 - ph)) + self.sequence.count('H')/(1 + 10**(ph - 5.637)) + \
               self.sequence.count('K')/(1 + 10**(ph - 9.052)) + self.sequence.count('R')/(1 + 10**(ph - 12.503)) > 0:
                 ph += 0.001
-        return ph
+        return round(ph, 2)
 
 
 def read_dna_fasta(filename):
@@ -406,28 +408,3 @@ def fastq_to_fasta(filename, cutoff = ' '):
                 fasta_entry = str()
                 line_count = 1
     return fasta_file
-
-# dna_test.identifier = 'myDNA'
-# print(dna_test.identifier)
-# dna_test.sequence = 'ATgGgacGcAttCTaGC'
-# print(dna_test.sequence)
-# print(dna_test.length())
-# print(dna_test.gc_content())
-# print(dna_test.mw_ss())
-# print(dna_test.mw_ds())
-# print(dna_test.compl_strand())
-# print(dna_test.rev_compl_strand())
-# print(dna_test.transcript())
-# print(dna_test.sequence.upper())
-# print(dna_test.translation())
-# rna_test = RNA('augc')
-# rna_test.identifier = 'myRNA'
-# print(rna_test.identifier)
-# rna_test.sequence = 'AUgGgacGcAuuCUaGC'
-# print(rna_test.sequence)
-# print(rna_test.length())
-# print(rna_test.gc_content())
-# print(rna_test.mw())
-# print(rna_test.rev_transcript())
-# print(rna_test.translation())
-# print(uniprot_fasta('O14980').sequence[0:20])
